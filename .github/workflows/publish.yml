@@ -12,8 +12,10 @@
 #   NPM_TOKEN — an npmjs.com access token (Automation type) with publish
 #   rights for the package name in package.json.
 #
-# NOTE: npm rejects re-publishing an existing version. Bump "version" in
-# package.json (and commit) before each publish run.
+# NOTE: version is auto-incremented on the runner by the "Smart version bump"
+# step — package.json keeps the base version (e.g. 0.30.0) in the repo, and
+# each publish produces a unique prerelease 0.30.0-antigravity.X. No manual
+# version commits are needed.
 
 name: Publish to npm
 
@@ -73,6 +75,15 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # Smart version bump: queries the npm registry for the highest published
+      # "<base>-antigravity.X" prerelease and writes <base>-antigravity.(X+1)
+      # into package.json (on-runner only; nothing is committed back). Starts
+      # at .1 when no prior -antigravity versions exist. Runs BEFORE the build
+      # so the version is inlined into the CLI bundle. Exports
+      # PUBLISHED_VERSION to GITHUB_ENV for later steps.
+      - name: Smart version bump (-antigravity.X)
+        run: node scripts/bump-antigravity-version.mjs
+
       # Compile the bundled Antigravity proxy to vendor/.../bin/antigravity-proxy.exe
       - name: Build Antigravity proxy executable
         run: bun run build:proxy
@@ -92,7 +103,15 @@ jobs:
         run: bun run build
 
       - name: Smoke test
-        run: node dist/cli.mjs --version
+        shell: pwsh
+        run: |
+          $embedded = (node dist/cli.mjs --version).Trim()
+          $expected = $env:PUBLISHED_VERSION
+          Write-Host "Embedded version: $embedded (expected: $expected)"
+          if ($expected -and ($embedded -notlike "*$expected*")) {
+            Write-Host "::error::CLI bundle does not report the bumped version. Expected '$expected' in '$embedded'."
+            exit 1
+          }
 
       # Preview exactly what will be packed (files array + vendor bundle)
       - name: Pack preview (dry run)
