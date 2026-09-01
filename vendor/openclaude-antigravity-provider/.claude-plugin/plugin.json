@@ -1,0 +1,38 @@
+{
+  "name": "openclaude-antigravity-provider",
+  "version": "1.0.0",
+  "description": "Local OpenAI-compatible proxy that authenticates via Google Antigravity OAuth. Enables OpenClaude to use Claude Opus 4.6, Claude Sonnet 4.6, and Gemini 3 Pro/Flash using your Google credentials with automatic multi-account rotation and rate-limit handling.",
+  "author": {
+    "name": "openclaude-antigravity"
+  },
+  "homepage": "https://github.com/NoeFabris/opencode-antigravity-auth",
+  "keywords": [
+    "antigravity",
+    "gemini",
+    "claude",
+    "google",
+    "oauth",
+    "proxy",
+    "provider"
+  ],
+  "userConfig": {
+    "proxy_port": {
+      "type": "string",
+      "title": "Proxy server port",
+      "description": "The local port the Antigravity proxy listens on. Default: 51122. Change only if this port is already in use.",
+      "default": "51122"
+    },
+    "auto_start": {
+      "type": "string",
+      "title": "Auto-start proxy on session start",
+      "description": "When on, the SessionStart hook automatically launches the proxy server in the background if it is not already running. Set to off/false/0/no to disable.",
+      "default": "on"
+    },
+    "default_model": {
+      "type": "string",
+      "title": "Default model",
+      "description": "The model to suggest when configuring OpenClaude's provider. One of: antigravity-claude-sonnet-4-6, antigravity-claude-opus-4-6-thinking, antigravity-gemini-3.1-pro, antigravity-gemini-3-flash.",
+      "default": "antigravity-claude-sonnet-4-6"
+    }
+  }
+}

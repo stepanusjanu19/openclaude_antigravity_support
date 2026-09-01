@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "openclaude-antigravity-provider",
+  "description": "Local OpenAI-compatible proxy that authenticates via Google Antigravity OAuth, enabling OpenClaude to use Claude Opus 4.6, Sonnet 4.6, and Gemini 3 Pro/Flash with your Google credentials.",
+  "owner": {
+    "name": "openclaude-antigravity"
+  },
+  "plugins": [
+    {
+      "name": "openclaude-antigravity-provider",
+      "description": "Auto-starting local proxy bridge: Google Antigravity OAuth with OpenAI-compatible API surface for OpenClaude. Multi-account rotation, automatic token refresh, rate-limit fallback.",
+      "source": "./",
+      "category": "provider",
+      "keywords": ["antigravity", "gemini", "claude", "google", "oauth", "proxy", "provider"]
+    }
+  ]
+}
