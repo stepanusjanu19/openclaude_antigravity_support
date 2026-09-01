@@ -8,12 +8,15 @@ const raw = readFileSync(pkgPath, 'utf8')
 const pkg = JSON.parse(raw)
 
 const current = String(pkg.version ?? '')
-const baseMatch = current.match(/^(\d+\.\d+\.\d+)/)
+const baseMatch = current.match(/^(\d+)\.(\d+)\.(\d+)(?=[-]|$)/)
 if (!baseMatch) {
-  console.error(`Cannot determine base version from "${current}"`)
+  console.error(`Cannot determine MAJOR.MINOR.PATCH from "${current}"`)
   process.exit(1)
 }
-const base = baseMatch[1]
+const major = Number(baseMatch[1])
+const minor = Number(baseMatch[2])
+const pkgPatch = Number(baseMatch[3])
+const family = `${major}.${minor}`
 
 const published = (() => {
   try {
@@ -23,27 +26,36 @@ const published = (() => {
       { encoding: 'utf8', stderr: 'pipe', timeout: 30_000 },
     )
     const parsed = JSON.parse(stdout)
-    return Array.isArray(parsed) ? parsed : [parsed]
+    return new Set(Array.isArray(parsed) ? parsed : [parsed])
   } catch {
-    return []
+    return new Set()
   }
 })()
 
-const prefix = `${base}-antigravity.`
-let highest = 0
+const antigravityPatchRe = new RegExp(`^${family}\\.(\\d+)-antigravity(?:[.-].*)?$`)
+let highest = -1
 for (const v of published) {
-  if (typeof v === 'string' && v.startsWith(prefix)) {
-    const n = Number.parseInt(v.slice(prefix.length), 10)
-    if (Number.isInteger(n) && n > highest) highest = n
+  const m = typeof v === 'string' ? v.match(antigravityPatchRe) : null
+  if (m) {
+    const p = Number(m[1])
+    if (Number.isInteger(p) && p > highest) highest = p
   }
 }
 
-const next = highest + 1
-const newVersion = `${base}-antigravity.${next}`
+let patch = pkgPatch > highest ? pkgPatch : highest + 1
+while (published.has(`${family}.${patch}-antigravity`)) {
+  patch += 1
+}
+const newVersion = `${family}.${patch}-antigravity`
+
+const priorInfo =
+  highest >= 0
+    ? `highest published -antigravity patch in ${family}.X: ${highest}`
+    : `no -antigravity releases in ${family}.X yet`
 
 console.log(`Package:  ${pkg.name}`)
-console.log(`Base:     ${base}`)
-console.log(`Found:    ${highest > 0 ? `${prefix}${highest}` : 'no prior -antigravity versions'}`)
+console.log(`Base:     ${major}.${minor}.${pkgPatch} (from package.json)`)
+console.log(`Registry: ${priorInfo}`)
 console.log(`Next:     ${newVersion}${dryRun ? ' (dry run, not written)' : ''}`)
 
 if (!dryRun) {
