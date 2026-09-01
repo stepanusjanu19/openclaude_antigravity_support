@@ -21,7 +21,9 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 agent.log
-plan/
+# Top-level scratch planning notes only. Anchored so it does NOT ignore
+# src/commands/plan/ (the /plan builtin command), which must be tracked.
+/plan/
 .tmp
 .tmp-*
 temp_reference/
