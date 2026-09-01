@@ -140,10 +140,26 @@ jobs:
             Write-Host "Unscoped package name: $($pkg.name)"
           }
 
+      # npm refuses to auto-assign the `latest` dist-tag to prerelease
+      # versions (any version with a hyphen, like 0.30.0-antigravity), so the
+      # tag must be explicit. `--tag latest` makes plain
+      # `npm install -g @gitlawb/openclaude` resolve to this build.
       - name: Publish to npm
-        run: npm publish --access public
+        run: npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Also expose an explicit `antigravity` dist-tag so users can install
+      # the Antigravity build even if upstream later reclaims `latest`.
+      # Non-fatal: the publish above already succeeded if this fails.
+      - name: Tag antigravity dist-tag
+        continue-on-error: true
+        shell: pwsh
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          $pkg = (Get-Content package.json -Raw | ConvertFrom-Json)
+          npm dist-tag add "$($pkg.name)@$($env:PUBLISHED_VERSION)" antigravity
 
       - name: Publish summary
         if: success()
@@ -153,7 +169,10 @@ jobs:
           {
             "## Published to npm"
             ""
-            "- Package: $($pkg.name)@$($pkg.version)"
+            "- Package: $($pkg.name)@$($env:PUBLISHED_VERSION)"
             "- npm: https://www.npmjs.com/package/$($pkg.name)"
+            "- Install: npm install -g $($pkg.name)"
+            "- Install (pinned): npm install -g $($pkg.name)@$($env:PUBLISHED_VERSION)"
+            "- Install (tag): npm install -g $($pkg.name)@antigravity"
             "- Bundle: OpenClaude CLI + openclaude-antigravity-provider (proxy exe included)"
           } | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
