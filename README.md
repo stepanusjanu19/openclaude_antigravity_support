@@ -12,10 +12,10 @@ OpenClaude is an open-source coding-agent CLI for cloud and local model provider
 
 Use OpenAI-compatible APIs, Gemini, GitHub Models, Codex OAuth, Codex, Ollama, Atomic Chat, and other supported backends while keeping one terminal-first workflow: prompts, tools, agents, MCP, slash commands, and streaming output.
 
-[![PR Checks](https://github.com/Gitlawb/openclaude/actions/workflows/pr-checks.yml/badge.svg?branch=main)](https://github.com/Gitlawb/openclaude/actions/workflows/pr-checks.yml)
-[![Release](https://img.shields.io/github/v/tag/Gitlawb/openclaude?label=release&color=0ea5e9)](https://github.com/Gitlawb/openclaude/tags)
-[![npm downloads](https://img.shields.io/npm/dm/@gitlawb/openclaude)](https://www.npmjs.com/package/@gitlawb/openclaude)
-[![Discussions](https://img.shields.io/badge/discussions-open-7c3aed)](https://github.com/Gitlawb/openclaude/discussions)
+[![PR Checks](https://github.com/stepanusjanu19/openclaude_antigravity_support/actions/workflows/pr-checks.yml/badge.svg?branch=master)](https://github.com/stepanusjanu19/openclaude_antigravity_support/actions/workflows/pr-checks.yml)
+[![Release](https://img.shields.io/github/v/tag/stepanusjanu19/openclaude_antigravity_support?label=release&color=0ea5e9)](https://github.com/stepanusjanu19/openclaude_antigravity_support/tags)
+[![npm downloads](https://img.shields.io/npm/dm/@xkei/openclaude)](https://www.npmjs.com/package/@xkei/openclaude)
+[![Discussions](https://img.shields.io/badge/discussions-open-7c3aed)](https://github.com/stepanusjanu19/openclaude_antigravity_support/discussions)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/k68zFR6AcB)
 [![X](https://img.shields.io/badge/X-@gitlawb-000000?logo=x&logoColor=white)](https://x.com/gitlawb)
 [![Security Policy](https://img.shields.io/badge/security-policy-0f766e)](SECURITY.md)
@@ -130,7 +130,7 @@ OpenClaude requires Node.js `>=22.0.0` for npm installs and runtime. Bun is
 only needed for source builds and local development.
 
 ```bash
-npm install -g @gitlawb/openclaude@latest
+npm install -g @xkei/openclaude@latest
 ```
 
 If you're on Arch Linux, you can install OpenClaude from the community-maintained [AUR package](https://aur.archlinux.org/packages/openclaude):
@@ -144,8 +144,8 @@ If the install later reports `ripgrep not found`, install ripgrep system-wide an
 
 ```bash
 openclaude --version
-npm view @gitlawb/openclaude dist-tags
-npm install -g @gitlawb/openclaude@latest
+npm view @xkei/openclaude dist-tags
+npm install -g @xkei/openclaude@latest
 ```
 
 ### Start
@@ -496,8 +496,8 @@ If you believe you found a security issue, see [SECURITY.md](SECURITY.md).
 
 ## Community
 
-- Use [GitHub Discussions](https://github.com/Gitlawb/openclaude/discussions) for Q&A, ideas, and community conversation
-- Use [GitHub Issues](https://github.com/Gitlawb/openclaude/issues) for confirmed bugs and actionable feature work
+- Use [GitHub Discussions](https://github.com/stepanusjanu19/openclaude_antigravity_support/discussions) for Q&A, ideas, and community conversation
+- Use [GitHub Issues](https://github.com/stepanusjanu19/openclaude_antigravity_support/issues) for confirmed bugs and actionable feature work
 - Join the [Discord](https://discord.gg/k68zFR6AcB) to chat with the community in real time
 - Follow [@gitlawb on X](https://x.com/gitlawb) for updates and announcements
 

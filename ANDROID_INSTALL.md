@@ -42,7 +42,7 @@ node --version  # should be v20+
 ### Step 3 — Clone OpenClaude
 
 ```bash
-git clone https://github.com/Gitlawb/openclaude.git
+git clone https://github.com/stepanusjanu19/openclaude_antigravity_support.git
 cd openclaude
 npm install
 npm link

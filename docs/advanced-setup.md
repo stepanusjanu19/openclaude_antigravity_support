@@ -10,7 +10,7 @@ only required when building or running from source.
 ### Option A: npm
 
 ```bash
-npm install -g @gitlawb/openclaude@latest
+npm install -g @xkei/openclaude@latest
 ```
 
 ### Option B: From source with Bun
@@ -18,7 +18,7 @@ npm install -g @gitlawb/openclaude@latest
 Use Bun `1.3.13` or newer for source builds. Older Bun versions can fail during `bun run build`.
 
 ```bash
-git clone https://github.com/Gitlawb/openclaude.git
+git clone https://github.com/stepanusjanu19/openclaude_antigravity_support.git
 cd openclaude
 
 bun install
@@ -29,7 +29,7 @@ npm link
 ### Option C: Run directly with Bun
 
 ```bash
-git clone https://github.com/Gitlawb/openclaude.git
+git clone https://github.com/stepanusjanu19/openclaude_antigravity_support.git
 cd openclaude
 
 bun install
@@ -391,7 +391,7 @@ The **OpenClaude VS Code extension** can store the key in Secret Storage and set
 
 ## Optional provider packages
 
-To keep the default `npm i -g @gitlawb/openclaude` install small and
+To keep the default `npm i -g @xkei/openclaude` install small and
 warning-free, a few provider SDKs and the native image library are **not
 bundled**. They are loaded on demand, and the CLI prints an `npm install <pkg>`
 hint (add `-g` for the global CLI) if you enable a feature whose package is
@@ -612,7 +612,7 @@ Notes:
 - Only sanitized, telemetry-safe error messages are sent — never raw error
   messages, which may contain file paths or other identifying information.
 - `@sentry/node` is an optional dev dependency and is **not included** in the
-  default `npm install -g @gitlawb/openclaude` install (see
+  default `npm install -g @xkei/openclaude` install (see
   [Optional provider packages](#optional-provider-packages)). If you set
   `SENTRY_DSN` without installing it separately, reporting is silently
   disabled (no error, no crash). Install it explicitly with:

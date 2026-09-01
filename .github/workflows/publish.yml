@@ -32,6 +32,7 @@ on:
 # repo is renamed or moved.
 env:
   EXPECTED_REPOSITORY: stepanusjanu19/openclaude_antigravity_support
+  EXPECTED_NPM_SCOPE: xkei
 
 concurrency:
   group: publish-npm-${{ github.ref }}
@@ -122,16 +123,22 @@ jobs:
         run: npm pack --dry-run
 
       # Advisory: npm scoped names (@scope/name) can only be published by
-      # tokens with rights to that scope. A fork under a different owner
-      # must rename the package in package.json (or own the scope).
+      # tokens with rights to that scope. EXPECTED_NPM_SCOPE documents the
+      # intended npm account for this fork.
       - name: Package name / scope advisory
         shell: pwsh
         run: |
           $pkg = (Get-Content package.json -Raw | ConvertFrom-Json)
           $repo = $env:GITHUB_REPOSITORY
+          $expectedScope = $env:EXPECTED_NPM_SCOPE
           if ($pkg.name -like '@*/*') {
             $scopeOwner = ($pkg.name -split '/')[0] -replace '@', ''
-            if ($repo -notlike "$scopeOwner/*") {
+            if ($expectedScope -and $scopeOwner -ne $expectedScope) {
+              Write-Host "::error::Package '$($pkg.name)' uses npm scope '@$scopeOwner' but this workflow expects '@$expectedScope'. Update package.json or EXPECTED_NPM_SCOPE."
+              exit 1
+            } elseif ($expectedScope) {
+              Write-Host "Package scope matches expected npm scope: @$scopeOwner"
+            } elseif ($repo -notlike "$scopeOwner/*") {
               Write-Host "::warning::Package '$($pkg.name)' uses the '@$scopeOwner' npm scope but this repo is '$repo'. Publishing succeeds only if NPM_TOKEN has rights to that scope - otherwise rename the package in package.json (e.g. '@$($repo -split '/')[0]/openclaude')."
             } else {
               Write-Host "Package scope matches repository owner: $($pkg.name)"
@@ -143,7 +150,7 @@ jobs:
       # npm refuses to auto-assign the `latest` dist-tag to prerelease
       # versions (any version with a hyphen, like 0.30.0-antigravity), so the
       # tag must be explicit. `--tag latest` makes plain
-      # `npm install -g @gitlawb/openclaude` resolve to this build.
+      # `npm install -g <package-name>` resolve to this build.
       - name: Publish to npm
         run: npm publish --access public --tag latest
         env:

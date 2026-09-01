@@ -7,7 +7,7 @@
 # `bun run src/server.ts` if the exe is missing.
 #
 # Path resolution is fully relative to this script, so the hook works from:
-#   - the npm-installed package (node_modules/@gitlawb/openclaude/vendor/...)
+#   - the npm-installed package (node_modules/@xkei/openclaude/vendor/...)
 #   - OpenClaude's versioned plugin cache (~/.openclaude/plugins/cache/...)
 #   - any source checkout
 # Compatible with PowerShell 5.1+

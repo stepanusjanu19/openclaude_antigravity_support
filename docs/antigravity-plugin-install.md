@@ -192,7 +192,7 @@ OpenClaude ──OpenAI-compatible──▶ local proxy (127.0.0.1:51122)
 **Uninstall the package:**
 
 ```powershell
-npm uninstall -g @gitlawb/openclaude
+npm uninstall -g @xkei/openclaude
 ```
 
 ---

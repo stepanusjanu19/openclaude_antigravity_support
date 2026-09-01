@@ -33,8 +33,8 @@ beforeAll(async () => {
     DISPLAY_VERSION: '0.0.0-test',
     BUILD_TIME: new Date().toISOString(),
     ISSUES_EXPLAINER:
-      'report the issue at https://github.com/Gitlawb/openclaude/issues',
-    PACKAGE_URL: '@gitlawb/openclaude',
+      'report the issue at https://github.com/stepanusjanu19/openclaude_antigravity_support/issues',
+    PACKAGE_URL: '@xkei/openclaude',
     NATIVE_PACKAGE_URL: undefined,
   }
 

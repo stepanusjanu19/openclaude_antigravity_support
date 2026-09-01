@@ -60,7 +60,7 @@ This policy applies to:
 
 - the Open Claude source code in this repository
 - official release artifacts published from this repository
-- the `@gitlawb/openclaude` npm package
+- the `@xkei/openclaude` npm package
 
 This policy does not cover:
 

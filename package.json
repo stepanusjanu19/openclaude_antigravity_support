@@ -1,5 +1,5 @@
 {
-  "name": "@gitlawb/openclaude",
+  "name": "@xkei/openclaude",
   "version": "0.30.0",
   "description": "OpenClaude opens coding-agent workflows to any LLM — OpenAI, Gemini, DeepSeek, Ollama, and 200+ models",
   "type": "module",
@@ -194,7 +194,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Gitlawb/openclaude.git"
+    "url": "git+https://github.com/stepanusjanu19/openclaude_antigravity_support.git"
+  },
+  "bugs": {
+    "url": "https://github.com/stepanusjanu19/openclaude_antigravity_support/issues"
   },
   "keywords": [
     "claude-code",
