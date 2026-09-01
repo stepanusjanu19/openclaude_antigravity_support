@@ -1,0 +1,136 @@
+# Publish to npm — unified OpenClaude + Antigravity provider package.
+#
+# Builds the FULL distribution on a Windows runner (required so the bundled
+# Antigravity proxy compiles natively to a Windows .exe, exactly as it does
+# locally) and publishes the package defined in package.json.
+#
+# Triggers:
+#   - Publishing a GitHub Release (any tag)
+#   - Manual run (workflow_dispatch)
+#
+# Required repository secret (Settings → Secrets and variables → Actions):
+#   NPM_TOKEN — an npmjs.com access token (Automation type) with publish
+#   rights for the package name in package.json.
+#
+# NOTE: npm rejects re-publishing an existing version. Bump "version" in
+# package.json (and commit) before each publish run.
+
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+# The repository this workflow is allowed to publish from. GitHub sets the
+# checkout remote to the workflow's own repo, so GITHUB_REPOSITORY is the
+# authoritative "remote origin" inside Actions. Update this value if the
+# repo is renamed or moved.
+env:
+  EXPECTED_REPOSITORY: stepanusjanu19/openclaude_antigravity_support
+
+concurrency:
+  group: publish-npm-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Build & publish (windows)
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      # Guard: this workflow must only publish from the expected repository.
+      # Prevents accidental publishes from the upstream repo or another fork
+      # (e.g. a clone where the origin URL was left pointing elsewhere).
+      - name: Verify repository origin
+        shell: pwsh
+        run: |
+          $expected = $env:EXPECTED_REPOSITORY
+          $actual = $env:GITHUB_REPOSITORY
+          Write-Host "Remote origin: $env:GITHUB_SERVER_URL/$actual.git"
+          Write-Host "Expected repo: $env:GITHUB_SERVER_URL/$expected.git"
+          if ($actual -ne $expected) {
+            Write-Host "::error::Publish blocked: workflow ran in '$actual' but is configured for '$expected'. Update EXPECTED_REPOSITORY in .github/workflows/publish.yml if this is intentional."
+            exit 1
+          }
+          Write-Host "Repository origin check passed."
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Compile the bundled Antigravity proxy to vendor/.../bin/antigravity-proxy.exe
+      - name: Build Antigravity proxy executable
+        run: bun run build:proxy
+
+      - name: Verify proxy executable exists
+        shell: pwsh
+        run: |
+          $exe = "vendor/openclaude-antigravity-provider/bin/antigravity-proxy.exe"
+          if (-not (Test-Path $exe)) {
+            Write-Error "Proxy executable missing at $exe - build:proxy failed"
+            exit 1
+          }
+          Write-Host "Proxy exe OK: $((Get-Item $exe).Length / 1MB) MB"
+
+      # Build dist/cli.mjs + dist/sdk.mjs and run the bundle validations
+      - name: Build OpenClaude CLI
+        run: bun run build
+
+      - name: Smoke test
+        run: node dist/cli.mjs --version
+
+      # Preview exactly what will be packed (files array + vendor bundle)
+      - name: Pack preview (dry run)
+        run: npm pack --dry-run
+
+      # Advisory: npm scoped names (@scope/name) can only be published by
+      # tokens with rights to that scope. A fork under a different owner
+      # must rename the package in package.json (or own the scope).
+      - name: Package name / scope advisory
+        shell: pwsh
+        run: |
+          $pkg = (Get-Content package.json -Raw | ConvertFrom-Json)
+          $repo = $env:GITHUB_REPOSITORY
+          if ($pkg.name -like '@*/*') {
+            $scopeOwner = ($pkg.name -split '/')[0] -replace '@', ''
+            if ($repo -notlike "$scopeOwner/*") {
+              Write-Host "::warning::Package '$($pkg.name)' uses the '@$scopeOwner' npm scope but this repo is '$repo'. Publishing succeeds only if NPM_TOKEN has rights to that scope - otherwise rename the package in package.json (e.g. '@$($repo -split '/')[0]/openclaude')."
+            } else {
+              Write-Host "Package scope matches repository owner: $($pkg.name)"
+            }
+          } else {
+            Write-Host "Unscoped package name: $($pkg.name)"
+          }
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish summary
+        if: success()
+        shell: pwsh
+        run: |
+          $pkg = (Get-Content package.json -Raw | ConvertFrom-Json)
+          {
+            "## Published to npm"
+            ""
+            "- Package: $($pkg.name)@$($pkg.version)"
+            "- npm: https://www.npmjs.com/package/$($pkg.name)"
+            "- Bundle: OpenClaude CLI + openclaude-antigravity-provider (proxy exe included)"
+          } | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
