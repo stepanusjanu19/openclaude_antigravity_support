@@ -123,3 +123,4 @@ CODE_OF_CONDUCT* text
 *.db binary
 *.sqlite binary
 *.sqlite3 binary
+.bun-version text eol=lf
