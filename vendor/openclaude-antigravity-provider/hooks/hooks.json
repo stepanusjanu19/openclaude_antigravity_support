@@ -4,32 +4,25 @@
       {
         "matcher": "startup",
         "hooks": [
-          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/start.bat\"", "timeout": 45 }
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/start.cjs\"", "timeout": 45 }
         ]
       },
       {
         "matcher": "resume",
         "hooks": [
-          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/start.bat\"", "timeout": 45 }
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/start.cjs\"", "timeout": 45 }
         ]
       },
       {
         "matcher": "clear",
         "hooks": [
-          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/start.bat\"", "timeout": 45 }
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/start.cjs\"", "timeout": 45 }
         ]
       },
       {
         "matcher": "compact",
         "hooks": [
-          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/start.bat\"", "timeout": 45 }
-        ]
-      }
-    ],
-    "SessionEnd": [
-      {
-        "hooks": [
-          { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/session-end.bat\"", "timeout": 30 }
+          { "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/start.cjs\"", "timeout": 45 }
         ]
       }
     ]

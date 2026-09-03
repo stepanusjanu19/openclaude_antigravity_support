@@ -21,9 +21,9 @@ free-tier rate limits.
 
 ## Requirements
 
-- **OS:** Windows 10/11 (the bundled proxy is a Windows executable; hooks are
-  `.bat`/`.ps1`).
-- **Node.js 20+** (or Bun 1.0+) — runs the CLI.
+- **OS:** Windows 10/11, macOS, or Linux on x64 or arm64 (the plugin ships
+  pre-compiled proxy binaries for all five platforms; hooks are plain Node.js).
+- **Node.js 22+** — runs the CLI and the hooks.
 - One or more **Google accounts** (personal Gmail accounts work).
 - Optional: **Bun** — only needed if you want to rebuild the proxy from source.
 
@@ -31,16 +31,22 @@ free-tier rate limits.
 
 ## Step 1 — Install the package
 
-Install from the bundled tarball (`gitlawb-openclaude-0.30.0.tgz`):
+Install from npm once published:
 
 ```powershell
-npm install -g .\gitlawb-openclaude-0.30.0.tgz
+npm install -g @xkei/openclaude@latest
+```
+
+or from a local tarball (`xkei-openclaude-<version>.tgz`):
+
+```powershell
+npm install -g .\xkei-openclaude-0.30.0-antigravity.tgz
 ```
 
 or with Bun:
 
 ```powershell
-bun install -g .\gitlawb-openclaude-0.30.0.tgz
+bun install -g .\xkei-openclaude-0.30.0-antigravity.tgz
 ```
 
 > If you are installing from a source checkout instead, see
@@ -171,9 +177,9 @@ OpenClaude ──OpenAI-compatible──▶ local proxy (127.0.0.1:51122)
 | Symptom | Fix |
 |---|---|
 | `openclaude` not found | Restart terminal (PATH refresh) |
-| Models not in `/model` list | Check the proxy: `Invoke-RestMethod http://127.0.0.1:51122/health` — expect `{"status":"ok","accounts":N,...}`. If not running, restart OpenClaude (the SessionStart hook relaunches it) |
-| Proxy slow to start | First launch may be delayed by antivirus scanning the exe (hook waits up to ~8 s; it keeps starting in the background) |
-| Port 51122 busy | Stop the stale process: `Get-Process antigravity-proxy \| Stop-Process -Force`, then restart OpenClaude |
+| Models not in `/model` list | Check the proxy: `curl http://127.0.0.1:51122/health` — expect `{"status":"ok","accounts":N,...}`. If not running, restart OpenClaude (the SessionStart hook relaunches it) |
+| Proxy slow to start | First launch may be delayed by antivirus scanning the binary (hook waits up to ~8 s; it keeps starting in the background) |
+| Port 51122 busy | Stop the stale process, then restart OpenClaude. Windows: `Stop-Process -Name antigravity-proxy-win-x64 -Force`. macOS/Linux: `pkill -f antigravity-proxy` |
 | OAuth add-account fails "port 51121 busy" | Another add-account flow is in progress or a stale listener holds the port — close it and retry |
 | 429 errors return | Rare on the sandbox path. Open `/accounts` → **Clear all rate limits**, or wait — the proxy auto-sleeps short cooldowns |
 | Settings not auto-written | File may be policy-locked; add the two entries from Step 3 manually or register via `/plugin` |
@@ -209,12 +215,12 @@ bun install
 # Build the CLI
 bun run build
 
-# Build the bundled proxy executable
+# Build the bundled proxy executables (all 5 platforms)
 bun run build:proxy
 
 # Produce the installable tarball
 npm pack --pack-destination dist-pack
-npm install -g .\dist-pack\gitlawb-openclaude-0.30.0.tgz
+npm install -g .\dist-pack\xkei-openclaude-0.30.0-antigravity.tgz
 ```
 
 **Standalone plugin only** (existing OpenClaude install): register the

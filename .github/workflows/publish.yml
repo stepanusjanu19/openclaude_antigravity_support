@@ -89,19 +89,24 @@ jobs:
       - name: Smart version bump (-antigravity)
         run: node scripts/bump-antigravity-version.mjs
 
-      # Compile the bundled Antigravity proxy to vendor/.../bin/antigravity-proxy.exe
+      # Compile the bundled Antigravity proxy for all platforms (cross-compile)
       - name: Build Antigravity proxy executable
         run: bun run build:proxy
 
-      - name: Verify proxy executable exists
+      - name: Verify proxy executables exist
         shell: pwsh
         run: |
-          $exe = "vendor/openclaude-antigravity-provider/bin/antigravity-proxy.exe"
-          if (-not (Test-Path $exe)) {
-            Write-Error "Proxy executable missing at $exe - build:proxy failed"
-            exit 1
+          $bins = @(
+            "vendor/openclaude-antigravity-provider/bin/antigravity-proxy-win-x64.exe",
+            "vendor/openclaude-antigravity-provider/bin/antigravity-proxy-linux-x64",
+            "vendor/openclaude-antigravity-provider/bin/antigravity-proxy-linux-arm64",
+            "vendor/openclaude-antigravity-provider/bin/antigravity-proxy-darwin-x64",
+            "vendor/openclaude-antigravity-provider/bin/antigravity-proxy-darwin-arm64"
+          )
+          foreach ($b in $bins) {
+            if (-not (Test-Path $b)) { Write-Error "Missing: $b"; exit 1 }
+            Write-Host "OK $b ($([math]::Round((Get-Item $b).Length/1MB,1)) MB)"
           }
-          Write-Host "Proxy exe OK: $((Get-Item $exe).Length / 1MB) MB"
 
       # Build dist/cli.mjs + dist/sdk.mjs and run the bundle validations
       - name: Build OpenClaude CLI

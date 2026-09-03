@@ -34,7 +34,7 @@
   ],
   "scripts": {
     "build": "bun run scripts/build.ts",
-    "build:proxy": "cd vendor/openclaude-antigravity-provider && bun build --compile src/server.ts --outfile bin/antigravity-proxy.exe",
+    "build:proxy": "bun run scripts/build-proxy-all.mjs",
     "benchmark:startup": "node scripts/benchmark-openclaude-startup.mjs",
     "integrations:generate": "bun run scripts/generate-integrations-artifacts.ts",
     "integrations:check": "bun run scripts/generate-integrations-artifacts.ts --check",

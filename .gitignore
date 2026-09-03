@@ -27,3 +27,6 @@ agent.log
 .tmp
 .tmp-*
 temp_reference/
+
+# Antigravity proxy binaries - built via bun run build:proxy, not committed (CI cross-compiles)
+vendor/openclaude-antigravity-provider/bin/
