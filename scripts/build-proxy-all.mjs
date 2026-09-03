@@ -25,16 +25,24 @@ const TARGETS = [
 // install size matters.
 // Retry wrapper: bun cross-compile downloads the target's base executable on
 // first use; CI runners hit transient "Failed to extract executable" network
-// failures. The failed download stays corrupted in ~/.bun/install/cache and
+// failures. The failed download stays corrupted in bun's package cache and
 // every blind retry re-extracts the same broken file — so purge the target's
 // cache entry before each retry to force a fresh download.
 // 3 attempts, 5s backoff.
-const BUN_CACHE = join(homedir(), '.bun', 'install', 'cache');
+const DEFAULT_BUN_CACHE = join(homedir(), '.bun', 'install', 'cache');
+
+function bunCacheDir() {
+  try {
+    return execFileSync('bun', ['pm', 'cache'], { encoding: 'utf8', timeout: 5000 }).trim();
+  } catch {
+    return DEFAULT_BUN_CACHE; // fallback: default cache location
+  }
+}
 
 function purgeTargetCache(flag) {
   try {
-    for (const entry of readdirSync(BUN_CACHE)) {
-      if (entry.startsWith(flag)) rmSync(join(BUN_CACHE, entry), { recursive: true, force: true });
+    for (const entry of readdirSync(bunCacheDir())) {
+      if (entry.startsWith(flag)) rmSync(join(bunCacheDir(), entry), { recursive: true, force: true });
     }
   } catch {} // cache dir missing = nothing to purge
 }
