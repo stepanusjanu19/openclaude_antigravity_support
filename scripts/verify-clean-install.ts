@@ -59,10 +59,11 @@ const KNOWN_FIRST_BOOT_NOISE_VERSIONS = new Set(['0.24.0'])
 
 // Lines npm may legitimately print at --loglevel=warn. Everything else fails.
 const ALLOWED_OUTPUT = [
-  // "added 8 packages in 19s", "added 1 package in 340ms",
-  // "added 1 package, removed 2 packages, and changed 3 packages in 4s",
-  // "up to date in 1s" — summary phrasing varies across npm 10/11.
-  /^(?:added|removed|changed|up to date)[\w ,]* in [\d.]+m?s$/i,
+    // "added 8 packages in 19s", "added 1 package in 340ms",
+    // "added 1 package, removed 2 packages, and changed 3 packages in 4s",
+    // "changed 8 packages in 2m", "up to date in 1s" — summary phrasing
+    // varies across npm 10/11 and durations may be m, s, or ms.
+    /^(?:added|removed|changed|up to date)[\w ,]* in (?:[\d.]+[mhs]+\s*)+$/i,
   /^npm notice\b/i, // defense in depth; --loglevel=warn hides notices
 ]
 

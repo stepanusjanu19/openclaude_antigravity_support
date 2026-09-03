@@ -21,12 +21,26 @@ const TARGETS = [
 // ponytail: all 5 binaries in one tarball (~175MB) — every install downloads all
 // platforms. Upgrade path: per-platform optionalDependencies packages when
 // install size matters.
+// Retry wrapper: bun cross-compile downloads the target's base executable on
+// first use; CI runners hit transient "Failed to extract executable" network
+// failures. 3 attempts, 5s backoff.
+function runWithRetry(args, label) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      execFileSync('bun', args, { cwd: root, stdio: ['ignore', 'inherit', 'inherit'] });
+      return;
+    } catch (err) {
+      if (attempt === 3) throw err;
+      console.warn(`\n${label} failed (attempt ${attempt}/3), retrying in 5s...`);
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000);
+    }
+  }
+}
+
 for (const { flag, out } of TARGETS) {
   process.stdout.write(`Building ${out} (${flag})... `);
   const t = Date.now();
-  execFileSync('bun', ['build', '--compile', entry, `--target=${flag}`, `--outfile=${out}`], {
-    cwd: root, stdio: ['ignore', 'inherit', 'inherit'],
-  });
+  runWithRetry(['build', '--compile', entry, `--target=${flag}`, `--outfile=${out}`], out);
   console.log(`done (${((Date.now() - t) / 1000).toFixed(1)}s)`);
 }
 console.log('All proxy binaries built.');
